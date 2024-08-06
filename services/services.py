@@ -17,7 +17,7 @@ def _key_user_choice(user_answer) -> str:
 # функция определяющая победителя
 def get_winner(user_choice: str, bot_choice: str) -> str:
     win = [
-        ["rock", "scissors"], ["scissors", "paper"], ["paer", "rock"]
+        ["rock", "scissors"], ["scissors", "paper"], ["paper", "rock"]
         ]
     
     if [user_choice, bot_choice] in win:
