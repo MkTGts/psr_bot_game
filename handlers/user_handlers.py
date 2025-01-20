@@ -1,11 +1,14 @@
 import logging
+import sqlite3
 from aiogram import F, Router
 from aiogram.types import Message
 from aiogram.filters import Command
 from keyboards.kyboards import yes_no_kb, game_kb
 from lexicon.lexicon import LEXICON_RU
 from services.services import get_bot_choice, get_winner, _key_user_choice, pars_wb
+from services.db_work import create_db, reterner_col, insert_datas
 from data.user_config import users
+
 
 
 # инициализация логгера
@@ -21,6 +24,9 @@ logging.basicConfig(
 
 
 
+create_db()
+
+
 router = Router()  # инициализация роутера
 
 
@@ -28,16 +34,25 @@ router = Router()  # инициализация роутера
 @router.message(Command(commands="start"))
 async def process_command_start(message: Message):
     #if str(message.from_user.id) not in users:
-    users[str(message.from_user.id)] = users.get(str(message.from_user.id), {
-        "in_pars": False,  # режим парсинга или нет
-        "id_wb": 0,  # последний подаваемый id
-        "count": 0  # общее количество запросов на парсинг
-    })
+    #users[str(message.from_user.id)] = users.get(str(message.from_user.id), {
+    #    "in_pars": False,  # режим парсинга или нет
+    #    "id_wb": 0,  # последний подаваемый id
+    #    "count": 0  # общее количество запросов на парсинг
+    #})
+    user_id = str(message.from_user.id)  # запись id юзера в переменную
+    #user_data = reterner_col((user_id))
+    #if not reterner_col((user_id)):
+    try:
+        user_data = reterner_col((user_id, ))
+    except:
+        insert_datas((user_id, 0, 0))
+        user_data = reterner_col((user_id, ))
+
     await message.answer(
         text=LEXICON_RU["/start"],
         reply_markup=yes_no_kb
     )
-    print(users)
+    print(user_data)
     logger.info(f'Start bot user id - {message.from_user.id}')
 
 
@@ -86,6 +101,7 @@ async def click_any_game_but(message: Message):
         reply_markup=yes_no_kb
     )
     
+
 
 # хэндлер на запуск парсера
 @router.message(F.text == LEXICON_RU["but_pars_wb"])
