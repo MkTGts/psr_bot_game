@@ -1,4 +1,5 @@
 import random
+from requests import get
 from lexicon.lexicon import LEXICON_RU
 
 
@@ -82,3 +83,9 @@ class ApiWB:
         self.get_image()
 
 
+
+def pars_wb(id_card: str):
+    resp = ApiWB(id_card=id_card)
+    resp()
+    res = f"Наименование товара: {resp.name}\nЦена товара: {resp.price[:-2]} руб.\nРейтинг товвара: {resp.rating}\nКоличество отзывов: {resp.feedbacks}\n\nСсылки на изображение:\n{'\n'.join(resp.urls_images)}\n\nОписание товара: {resp.description}"
+    return res

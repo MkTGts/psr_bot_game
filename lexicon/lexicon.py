@@ -5,6 +5,7 @@ LEXICON_RU: dict[str, str] = {
     "/help": "Мне лень прописывать правила и так все понятно же.",
     "but_yes": "Сыграть.",
     "but_no": "Не хочу.",
+    "but_pars_wb": "Парсер WB", 
     "rock": "Камень",
     "paper": "Бумага",
     "scissors": "Ножницы",
@@ -14,7 +15,9 @@ LEXICON_RU: dict[str, str] = {
     "bot_win": "Я победил!\n\nДавай еще раз?",
     "user_win": "Ты победил! Поздравляю.\n\nСыграем еще?",
     "no_winner": "Ничья.\n\nЕще поиграем?",
-    "bot_choice": "Мой выбор "
+    "bot_choice": "Мой выбор ",
+    "if_pars_wb": "Ок.\nВведи id товара с WB.",
+    "incorrect_id": "Неверный формат id"
 }
 
 

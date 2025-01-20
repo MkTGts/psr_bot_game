@@ -6,10 +6,11 @@ from lexicon.lexicon import LEXICON_RU
 # создание кнопока в ответ на поедложение начать игру
 button_yes = KeyboardButton(text=LEXICON_RU["but_yes"])
 button_no = KeyboardButton(text=LEXICON_RU["but_no"])
+button_pars = KeyboardButton(text=LEXICON_RU["but_pars_wb"])
 
 # инициализация биледра 
 yes_no_kb_builder = ReplyKeyboardBuilder()
-yes_no_kb_builder.row(button_yes, button_no, width=2)
+yes_no_kb_builder.row(button_yes, button_no, button_pars, width=3)
 
 yes_no_kb = yes_no_kb_builder.as_markup(  # создание клавиатуры начать игру да нет
     one_time_keyboard=True,
