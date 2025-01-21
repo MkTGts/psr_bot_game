@@ -5,6 +5,7 @@ from aiogram.filters import Command
 from keyboards.kyboards import yes_no_kb, game_kb
 from lexicon.lexicon import LEXICON_RU
 from services.services import get_bot_choice, get_winner, _key_user_choice, pars_wb
+from services.db import create_db, verification, insert_datas
 from data.user_config import users
 
 
@@ -19,7 +20,7 @@ logging.basicConfig(
        '%(lineno)d - %(name)s - %(message)s'
 )
 
-
+create_db()
 
 router = Router()  # инициализация роутера
 
@@ -27,17 +28,23 @@ router = Router()  # инициализация роутера
 # хэндрел на команду старт
 @router.message(Command(commands="start"))
 async def process_command_start(message: Message):
-    #if str(message.from_user.id) not in users:
+    '''#if str(message.from_user.id) not in users:
     users[str(message.from_user.id)] = users.get(str(message.from_user.id), {
         "in_pars": False,  # режим парсинга или нет
         "id_wb": 0,  # последний подаваемый id
         "count": 0  # общее количество запросов на парсинг
-    })
+    })'''
+
+    create_db()  # создает базу данных
+
+    # проверка есть ли пользователь в базе и если нет, то занесение в базу
+    if not verification(tg_id=message.from_user.id):
+        insert_datas("false", str(message.from_user.id), '0', 0)
+
     await message.answer(
         text=LEXICON_RU["/start"],
         reply_markup=yes_no_kb
     )
-    print(users)
     logger.info(f'Start bot user id - {message.from_user.id}')
 
 
