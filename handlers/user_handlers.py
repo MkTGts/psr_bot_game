@@ -97,7 +97,10 @@ async def click_any_game_but(message: Message):
 # хэндлер на запуск парсера
 @router.message(F.text == LEXICON_RU["but_pars_wb"])
 async def start_parser(message: Message):
-    users[str(message.from_user.id)]["in_pars"] = True  # выставляет значение запуска парсера
+
+    #users[str(message.from_user.id)]["in_pars"] = True  # выставляет значение запуска парсера
+
+
     await message.answer(
         text=LEXICON_RU["if_pars_wb"],  # просит юзера ввести id товара
     )
