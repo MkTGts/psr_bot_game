@@ -5,7 +5,7 @@ from aiogram.filters import Command
 from keyboards.kyboards import yes_no_kb, game_kb
 from lexicon.lexicon import LEXICON_RU
 from services.services import get_bot_choice, get_winner, _key_user_choice, pars_wb
-from services.db import create_db, verification, insert_datas
+from services.db import create_db, verification_user, insert_datas, set_pars_mode, verification_mode, set_wb_id
 from data.user_config import users
 
 
@@ -38,8 +38,8 @@ async def process_command_start(message: Message):
     create_db()  # создает базу данных
 
     # проверка есть ли пользователь в базе и если нет, то занесение в базу
-    if not verification(tg_id=message.from_user.id):
-        insert_datas("false", str(message.from_user.id), '0', 0)
+    if not verification_user(tg_id=message.from_user.id):
+        insert_datas(("false", str(message.from_user.id), '0', 0, ))
 
     await message.answer(
         text=LEXICON_RU["/start"],
@@ -94,12 +94,13 @@ async def click_any_game_but(message: Message):
     )
     
 
-# хэндлер на запуск парсера
+# хэндлер на запуск парсера. в частонсти выставляется режим парсинга у пользователя 
 @router.message(F.text == LEXICON_RU["but_pars_wb"])
 async def start_parser(message: Message):
 
     #users[str(message.from_user.id)]["in_pars"] = True  # выставляет значение запуска парсера
 
+    set_pars_mode(tg_id=str(message.from_user.id))
 
     await message.answer(
         text=LEXICON_RU["if_pars_wb"],  # просит юзера ввести id товара
@@ -110,17 +111,22 @@ async def start_parser(message: Message):
 # хэндлер работы парсера
 @router.message(lambda x: x.text and x.text.isdigit() and len(x.text) == 9)  # проверка что id соответсвует требованию
 async def working_parser(message: Message):
-    if users[str(message.from_user.id)]["in_pars"] == True:  # если запущен редим парсера wb
+
+
+    '''if users[str(message.from_user.id)]["in_pars"] == True:  # если запущен редим парсера wb
         users[str(message.from_user.id)]["id_wb"] = message.text  # присваевает запрозенный id
-        res = pars_wb(message.text)  # парсит данные по id через класс парсера
+        res = pars_wb(message.text)  # парсит данные по id через класс парсера'''
+    
+    if verification_mode(str(message.from_user.id)):  # если установлен режим парсинга
+        set_wb_id(tg_id=message.from_user.id, wb_id=message.text)  # добавляет в базу запрашиваемый id и прибавляет к чеслу раз парсинга
+
         await message.answer(
-            text=res #LEXICON_RU["if_pars_wb"],
+            text=pars_wb(message.text)  # возвращает результат парсинга
         )
-        users[str(message.from_user.id)]["in_pars"] = False  # закрывает режим парсинга wb
-        users[str(message.from_user.id)]["count"] += 1
+        set_pars_mode(tg_id=str(message.from_user.id), var="false")  # закрывает режим парсинга wb
         logger.info(f'Working parser user id - {message.from_user.id}')  # лог запущенного парсера
     else:
         await message.answer(
-            text=LEXICON_RU["incorrect_id"],
+            text=LEXICON_RU["not_pars_mode"],
         )
-        users[str(message.from_user.id)]["in_pars"] = False  # закрывает режим парсинга wb
+
